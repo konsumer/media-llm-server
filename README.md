@@ -152,7 +152,7 @@ The new plugins will appear in VueTorrent's search dropdown.
 #### Popular Plugins
 - **eztv.py** - TV shows
 - **solidtorrents.py** - Meta-search across multiple sites
-- **jackett.py** - Integrates with Jackett (requires configuration)
+- **jackett.py** - Integrates with Jackett (requires configuration, and you might want to run jackett in your docker-compose)
 - **torrentscsv.py** - CSV-based torrent search
 
 ## VPN Configuration
