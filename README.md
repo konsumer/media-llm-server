@@ -170,7 +170,7 @@ WIREGUARD_PRIVATE_KEY=<YOURS>
 
 ### Verify VPN is Working
 ```bash
-docker compose exec qbittorrent wget -qO- ifconfig.me
+docker compose exec qbittorrent curl ifconfig.me/all
 # Should show VPN IP: <YOUR_VPN_IP>
 ```
 
