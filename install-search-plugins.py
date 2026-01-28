@@ -20,7 +20,7 @@ PLUGINS_DIR_DEFAULT = "./config/qbittorrent/qBittorrent/nova3/engines"
 # these are pulled from
 # https://github.com/qbittorrent/search-plugins/tree/master/nova3/engines
 # https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins
-# there were some dead, so I tried to find them
+# there were some dead
 
 plugins = {
   "official": {
