@@ -171,7 +171,23 @@ WIREGUARD_PRIVATE_KEY=<YOURS>
 ### Verify VPN is Working
 ```bash
 docker compose exec qbittorrent curl ifconfig.me/all
-# Should show VPN IP: <YOUR_VPN_IP>
+
+# Should show the VPN IP, not your real IP:
+
+ip_addr: <YOUR_IP>
+remote_host: unavailable
+user_agent: curl/8.18.0
+port: 39852
+language:
+referer:
+connection:
+keep_alive:
+method: GET
+encoding:
+mime: */*
+charset:
+via: 1.1 google
+forwarded: <YOUR_IP>,<ANOTHER>
 ```
 
 You can also try [a magent link here](https://torguard.net/check-my-torrent-ip-address/), to verify yuour torrent client does not show your real IP.
