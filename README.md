@@ -8,7 +8,7 @@ Docker-based media server with VPN-protected torrents, Plex, AI tools, and more.
 
 Some things you should setup, first:
 
-- Get a VPN. Most will work fine, look for "WireGuard" configuration, and use it to set the `WIREGAURD_` variables, or just directly edit `config/gluetun/wg0.conf`
+- Get a VPN. Most will work fine, look for "WireGuard" configuration, and use it to set the `WIREGAURD_` variables
 - Install docker
 - If you want GPU acceleration, and have an Nvidia card, install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
@@ -219,5 +219,4 @@ This is **normal** when using a VPN. You can still download and upload torrents,
 ### VPN Not Connecting
 
 1. Check Gluetun logs: `docker compose logs gluetun`
-2. Verify WireGuard config: `config/gluetun/wg0.conf`
-3. Check .env file has correct VPN credentials
+2. Verify WireGuard config (`WIREGAURD_` variables) in .env file
