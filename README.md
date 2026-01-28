@@ -207,9 +207,8 @@ qBittorrent WebUI is accessible without password from:
 /mnt/MEDIA/server/
 ├── config/
 │   ├── qbittorrent/     # qBittorrent + VueTorrent config
-│   ├── gluetun/                # VPN config
-│   ├── jackett/                # Jackett config
-│   ├── plex/                   # Plex database
+│   ├── gluetun/         # VPN config
+│   ├── plex/            # Plex database
 │   └── ...
 └── docker-compose.yml
 ```

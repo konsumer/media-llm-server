@@ -2,6 +2,7 @@ services:
   samba:
     image: dockurr/samba
     restart: unless-stopped
+    hostname: gir
     environment:
       - USER=timemachine
       - PASS=timemachine
@@ -9,11 +10,26 @@ services:
       - GID=1000
     ports:
       - "445:445"
+      - "139:139"
+      - "137:137/udp"
+      - "138:138/udp"
     volumes:
       - ${ROOT}:/media
       - ${CONFIG}/samba/smb.conf:/etc/samba/smb.conf
     networks:
       default: null
+
+  avahi:
+    image: flungo/avahi
+    restart: unless-stopped
+    hostname: gir
+    network_mode: host
+    environment:
+      - SERVER_HOST_NAME=gir
+    volumes:
+      - ${CONFIG}/avahi/services:/etc/avahi/services
+    cap_add:
+      - NET_ADMIN
 
   # little web-page for everything
   # totally optional, but it helps me remember where things are
