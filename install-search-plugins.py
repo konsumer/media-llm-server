@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Download qBittorrent search plugins from official and unofficial sources.
-Usage: python3 install-search-plugins.py [--official] [--unofficial] [--all]
+Usage: python3 install-search-plugins.py [--official] [--unofficial] [--private]
 """
 
 import argparse
@@ -161,11 +161,6 @@ def main():
         help="Download/list private tracker unooficial plugins (requires login/account)",
     )
     parser.add_argument(
-        "--all",
-        action="store_true",
-        help="Download/list both official and unofficial plugins",
-    )
-    parser.add_argument(
         "--list",
         action="store_true",
         help="List available plugins without downloading",
@@ -178,12 +173,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Default to --all if no flags specified (or if only --list is specified)
-    if not (args.official or args.unofficial or args.all):
-        args.all = True
-
-    # set all to true for all
-    if args.all:
+    # Default to all non-private if no flags specified (or if only --list is specified)
+    if not (args.official or args.unofficial):
         args.official = True
         args.unofficial = True
 
