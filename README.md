@@ -6,10 +6,18 @@ Docker-based media server with VPN-protected torrents, Plex, AI tools, and more.
 > It is assumed this is running on your LAN, behind a firewall. Everything is lacking authentication (but you can add it) so you probably don't want to deploy this as-is, if your network is not secured.
 
 
+Some things you should setup, first:
+
+- Get a VPN. Most will work fine, look for "WireGuard" configuration, and use it to set the `WIREGAURD_` variables, or just directly edit `config/gluetun/wg0.conf`
+- Install docker
+- If you want GPU acceleration, and have an Nvidia card, install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
 In the directions below:
 
 - `/mnt/MEDIA/server/config` - defined as `$CONFIG` in `.env`. This is where dockers will store their settings.
 - `/mnt/MEDIA` - defined as `$ROOT` in `.env`. This is where all your media-files go. 
+
+You can set the variables to whatever location you want.
 
 To get started copy the example config, and adjust everything:
 
