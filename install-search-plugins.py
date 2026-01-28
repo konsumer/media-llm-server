@@ -12,155 +12,132 @@ import sys
 import urllib.request
 from pathlib import Path
 from urllib.error import URLError, HTTPError
-
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    print("Error: BeautifulSoup4 is required. Install with: pip install beautifulsoup4")
-    sys.exit(1)
+from bs4 import BeautifulSoup
 
 # Configuration
-PLUGINS_DIR = Path("./config/qbittorrent/qBittorrent/nova3/engines")
-OFFICIAL_REPO = "https://api.github.com/repos/qbittorrent/search-plugins/contents/nova3/engines"
-OFFICIAL_RAW = "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines"
-UNOFFICIAL_WIKI = "https://raw.githubusercontent.com/wiki/qbittorrent/search-plugins/Unofficial-search-plugins.md"
+PLUGINS_DIR_DEFAULT = "./config/qbittorrent/qBittorrent/nova3/engines"
 
-# Skip these files (helpers, not actual plugins)
-SKIP_FILES = {"__init__.py", "example.py"}
+# these are pulled from
+# https://github.com/qbittorrent/search-plugins/tree/master/nova3/engines
+# https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins
 
+plugins = {
+  "official": {
+    "eztv": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py",
+    "jackett": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/jackett.py",
+    "limetorrents": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py",
+    "piratebay": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py",
+    "solidtorrents": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py",
+    "torlock": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py",
+    "torrentproject": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py",
+    "torrentscsv": "https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py"
+  },
+  "unofficial": {
+    "academictorrents": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/academictorrents.py",
+    "acgrip": "https://raw.githubusercontent.com/Cc050511/qBit-search-plugins/main/acgrip.py",
+    "ali213": "https://raw.githubusercontent.com/hannsen/qbittorrent_search_plugins/master/ali213.py",
+    "anidex": "https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/anidex.py",
+    "animetosho": "https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py",
+    "audiobookbay": "https://raw.githubusercontent.com/nklido/qBittorrent_search_engines/master/engines/audiobookbay.py",
+    "bitsearch": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/bitsearch.py",
+    "bt4gprx": "https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py",
+    "btdig": "https://raw.githubusercontent.com/galaris/BTDigg-qBittorrent-plugin/main/btdig.py",
+    "calidadtorrent": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/calidadtorrent.py",
+    "cloudtorrents": "https://raw.githubusercontent.com/elazar/qbittorrent-search-plugins/refs/heads/add-cloudtorrents-plugin/nova3/engines/cloudtorrents.py",
+    "cpasbien": "https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py",
+    "darklibria": "https://raw.githubusercontent.com/bugsbringer/qbit-plugins/master/darklibria.py",
+    "divxtotal": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/divxtotal.py",
+    "dmhy": "https://raw.githubusercontent.com/ZH1637/dmhy/main/dmhy.py",
+    "dodi_repacks": "https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py",
+    "dontorrent": "https://raw.githubusercontent.com/dangar16/dontorrent-plugin/main/dontorrent.py",
+    "elitetorrent": "https://raw.githubusercontent.com/iordic/qbittorrent-search-plugins/master/engines/elitetorrent.py",
+    "esmeraldatorrent": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/esmeraldatorrent.py",
+    "fitgirl_repacks": "https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py",
+    "glotorrents": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py",
+    "kickasstorrents": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py",
+    "linuxtracker": "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py",
+    "magnetdl": "https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/magnetdl.py",
+    "maxitorrent": "https://raw.githubusercontent.com/joseeloren/search-plugins/master/nova3/engines/maxitorrent.py",
+    "mejortorrent": "https://raw.githubusercontent.com/iordic/qbittorrent-search-plugins/master/engines/mejortorrent.py",
+    "mikan": "https://raw.githubusercontent.com/Cycloctane/qBittorrent-plugins/master/engines/mikan.py",
+    "mikanani": "https://raw.githubusercontent.com/Cc050511/qBit-search-plugins/main/mikanani.py",
+    "mypornclub": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/mypornclub.py",
+    "naranjatorrent": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/naranjatorrent.py",
+    # "pantsu": "https://raw.githubusercontent.com/libellula/qbt-plugins/main/pantsu.py",
+    "nyaapantsu": "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/refs/heads/main/engines/nyaapantsu.py",
+    "nyaasi": "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py",
+    "onlinefix": "https://raw.githubusercontent.com/caiocinel/onlinefix-qbittorrent-plugin/main/onlinefix.py",
+    "pediatorrent": "https://raw.githubusercontent.com/dangar16/pediatorrent-plugin/refs/heads/main/pediatorrent.py",
+    "pirateiro": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/pirateiro.py",
+    "rockbox": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/rockbox.py",
+    "rutor": "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py",
+    "sktorrent": "https://raw.githubusercontent.com/Ashalda/sktorrent-qbt/refs/heads/main/sktorrent.py",
+    "smallgames": "https://raw.githubusercontent.com/hannsen/qbittorrent_search_plugins/master/smallgames.py",
+    "snowfl": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py",
+    "solidtorrents": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/solidtorrents.py",
+    "subsplease": "https://raw.githubusercontent.com/kli885/qBittorent-SubsPlease-Search-Plugin/main/subsplease.py",
+    "sukebeisi": "https://github.com/vt-idiot/qBit-SukebeiNyaa-plugin/raw/master/engines/sukebeisi.py",
+    "nyaa": "https://raw.githubusercontent.com/phuongtailtranminh/qBittorrent-Nyaa-Search-Plugin/master/nyaa.py",
+    # "sukebei": "https://raw.githubusercontent.com/libellula/qbt-plugins/main/sukebei.py",
+    "thepiratebay": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/thepiratebay.py",
+    "therarbg": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/therarbg.py",
+    "tomadivx": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/tomadivx.py",
+    "tokyotoshokan": "https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py",
+    "torrent9": "https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py",
+    "torrentdownload": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/torrentdownload.py",
+    "torrentdownloads": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/torrentdownloads.py",
+    # "torrenflix": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/torrenflix.py",
+    "torrentgalaxy": "https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py",
+    "traht": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/traht.py",
+    "uniondht": "https://raw.githubusercontent.com/msagca/qbittorrent-plugins/main/uniondht.py",
+    "xxxclubto": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/xxxclubto.py",
+    "yourbittorrent": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/yourbittorrent.py",
+    "yggtracker": "https://raw.githubusercontent.com/YGGverse/qbittorrent-yggtracker-search-plugin/main/yggtracker.py",
+    "zooqle": "https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py"
+  },
+  "private": {
+    "bakabt": "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/bakabt.py",
+    "danishbytes": "https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/danishbytes.py",
+    # "filelist": "https://raw.githubusercontent.com/victorBuzdugan/QbittorrentFilelistSearchPlugin/master/filelist.py",
+    "gazellegames": "https://raw.githubusercontent.com/Ooggle/qbittorrent-search-plugins/master/engines/gazellegames.py",
+    "iptorrents": "https://raw.githubusercontent.com/txtsd/qB-IPT/master/iptorrents.py",
+    "kinozal": "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/kinozal.py",
+    "lostfilm": "https://raw.githubusercontent.com/bugsbringer/qbit-plugins/master/lostfilm.py",
+    "ncore": "https://raw.githubusercontent.com/darktohka/qbittorrent-plugins/master/ncore.py",
+    "nnmclub": "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/nnmclub.py",
+    "pornolab": "https://raw.githubusercontent.com/TainakaDrums/qbPornolab/master/pornolab.py",
+    "redacted_ch": "https://raw.githubusercontent.com/evyd13/search-plugins/master/nova3/engines/redacted_ch.py",
+    "rutracker": "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutracker.py",
+    "torrentleech": "https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/torrentleech.py",
+    "prowlarr": "https://raw.githubusercontent.com/swannie-eire/prowlarr-qbittorrent-plugins/main/prowlarr.py",
+    "speedapp": "https://raw.githubusercontent.com/miIiano/SpeedApp.io-qBittorent-search-plugin/main/speedapp.py",
+    "tapochek": "https://raw.githubusercontent.com/MjKey/qBT-SE/refs/heads/master/enigines/tapochek.py",
+    "toloka_to": "https://raw.githubusercontent.com/playday3008/qBittorrent-plugins/refs/heads/main/plugins/search/toloka_to.py",
+    "yggtorrent": "https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py"
+  }
+}
 
-def download_file(url, dest):
-    """Download a file from URL to destination."""
-    try:
-        print(f"  Downloading {dest.name}...", end=" ")
-        with urllib.request.urlopen(url, timeout=10) as response:
-            content = response.read()
-            dest.write_bytes(content)
-        print("✓")
-        return True
-    except (URLError, HTTPError) as e:
-        print(f"✗ ({e})")
-        return False
-
-
-def get_official_plugins():
-    """Get list of official plugins from GitHub API."""
-    print("\n📦 Fetching official plugins...")
-    try:
-        with urllib.request.urlopen(OFFICIAL_REPO, timeout=10) as response:
-            data = json.loads(response.read())
-            plugins = [
-                item["name"]
-                for item in data
-                if item["name"].endswith(".py") and item["name"] not in SKIP_FILES
-            ]
-        print(f"Found {len(plugins)} official plugins")
-        return plugins
-    except Exception as e:
-        print(f"Error fetching official plugins: {e}")
-        return []
-
-
-def get_unofficial_plugins(include_private=False):
-    """Get list of unofficial plugins by scraping the wiki page."""
-    print("\n📦 Fetching unofficial plugins from wiki...")
-    try:
-        # Fetch the wiki HTML page
-        req = urllib.request.Request(
-            "https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins",
-            headers={'User-Agent': 'Mozilla/5.0'}
-        )
-        with urllib.request.urlopen(req, timeout=10) as response:
-            html_content = response.read().decode("utf-8")
-
-        # Parse HTML with BeautifulSoup
-        soup = BeautifulSoup(html_content, 'html.parser')
-
-        public_plugins = set()
-        private_plugins = set()
-
-        # Find the sections by looking for specific heading patterns
-        current_section = None
-
-        # Iterate through all elements in order
-        for element in soup.find_all(['h1', 'h2', 'h3', 'tr']):
-            # Update section based on headings
-            if element.name in ['h1', 'h2', 'h3']:
-                text = element.get_text().strip().lower()
-                if 'public' in text and 'site' in text:
-                    current_section = "public"
-                elif 'private' in text and 'site' in text:
-                    current_section = "private"
-
-            # Extract plugin links from table rows
-            elif element.name == 'tr' and current_section:
-                # Find all links in this row
-                links = element.find_all('a', href=True)
-                for link in links:
-                    href = link.get('href', '')
-                    if href.endswith('.py'):
-                        filename = href.split('/')[-1]
-                        if filename not in SKIP_FILES:
-                            if current_section == "public":
-                                public_plugins.add(filename)
-                            elif current_section == "private":
-                                private_plugins.add(filename)
-
-        # Convert to sorted lists
-        public_plugins = sorted(public_plugins)
-        private_plugins = sorted(private_plugins)
-
-        if not public_plugins and not private_plugins:
-            raise Exception("No plugins found in wiki")
-
-        # Return based on include_private flag
-        if include_private:
-            print(f"Found {len(public_plugins)} public + {len(private_plugins)} private plugins")
-            return public_plugins, private_plugins
+def list_plugins(official, unofficial, private):
+    for header in plugins:
+        print(header) 
+        if not len(plugins[header]):
+            print("  NONE")
         else:
-            print(f"Found {len(public_plugins)} public plugins (use --private to include private trackers)")
-            return public_plugins
+            for plugin in plugins[header]:
+                print(f"  {plugin}")
+        print("")
 
-    except Exception as e:
-        print(f"Error fetching unofficial plugins: {e}")
-        print("Falling back to minimal list...")
-        # Minimal fallback list
-        fallback = ["torrentgalaxy.py", "btdig.py", "magnetdl.py", "bitsearch.py"]
-        if include_private:
-            return fallback, []
-        return fallback
-
-
-def download_official_plugin(plugin_name):
-    """Download an official plugin."""
-    url = f"{OFFICIAL_RAW}/{plugin_name}"
-    dest = PLUGINS_DIR / plugin_name
-    return download_file(url, dest)
-
-
-def download_unofficial_plugin(plugin_name):
-    """Try to download an unofficial plugin from common sources."""
-    # Try common unofficial sources
-    sources = [
-        f"https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/{plugin_name}",
-        f"https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/{plugin_name}",
-    ]
-
-    dest = PLUGINS_DIR / plugin_name
-
-    for url in sources:
-        try:
-            print(f"  Trying {plugin_name}...", end=" ")
-            with urllib.request.urlopen(url, timeout=10) as response:
+def download_plugins(dir, official, unofficial, private):
+    for category in plugins:
+        for name, url in plugins[category].items():
+            try:
+                response = urllib.request.urlopen(url)
                 content = response.read()
-                dest.write_bytes(content)
-            print("✓")
-            return True
-        except (URLError, HTTPError):
-            continue
+                filepath = dir / f"{name}.py"
+                filepath.write_bytes(content)
+            except Exception as e:
+                print(f"  Error downloading {name}: {e}", file=sys.stderr)
 
-    print(f"✗ (not found)")
-    return False
 
 
 def main():
@@ -170,17 +147,22 @@ def main():
     parser.add_argument(
         "--official",
         action="store_true",
-        help="Download official plugins only",
+        help="Download/list official plugins",
     )
     parser.add_argument(
         "--unofficial",
         action="store_true",
-        help="Download unofficial plugins only",
+        help="Download/list unofficial plugins",
+    )
+    parser.add_argument(
+        "--private",
+        action="store_true",
+        help="Download/list private tracker unooficial plugins (requires login/account)",
     )
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Download both official and unofficial plugins",
+        help="Download/list both official and unofficial plugins",
     )
     parser.add_argument(
         "--list",
@@ -188,9 +170,9 @@ def main():
         help="List available plugins without downloading",
     )
     parser.add_argument(
-        "--private",
-        action="store_true",
-        help="Include private trackers (requires login/account)",
+        '--dir',
+        help="Output dir for plugins",
+        default=PLUGINS_DIR_DEFAULT
     )
 
     args = parser.parse_args()
@@ -199,71 +181,17 @@ def main():
     if not (args.official or args.unofficial or args.all):
         args.all = True
 
-    # Create plugins directory if it doesn't exist
-    PLUGINS_DIR.mkdir(parents=True, exist_ok=True)
+    # set all to true for all
+    if args.all:
+        args.official = True
+        args.unofficial = True
 
-    print("=" * 60)
-    print("qBittorrent Search Plugin Installer")
-    print("=" * 60)
-    print(f"Target directory: {PLUGINS_DIR}")
-
-    # Track statistics
-    stats = {"official": 0, "unofficial": 0, "failed": 0}
-
-    # Handle official plugins
-    if args.official or args.all:
-        plugins = get_official_plugins()
-        if args.list:
-            print("\nOfficial plugins:")
-            for p in sorted(plugins):
-                print(f"  - {p}")
-        else:
-            print("\n📥 Downloading official plugins...")
-            for plugin in plugins:
-                if download_official_plugin(plugin):
-                    stats["official"] += 1
-                else:
-                    stats["failed"] += 1
-
-    # Handle unofficial plugins
-    if args.unofficial or args.all:
-        if args.private:
-            result = get_unofficial_plugins(include_private=True)
-            public_plugins, private_plugins = result
-            all_plugins = public_plugins + private_plugins
-        else:
-            all_plugins = get_unofficial_plugins(include_private=False)
-            public_plugins = all_plugins
-            private_plugins = []
-
-        if args.list:
-            print("\nUnofficial PUBLIC plugins:")
-            for p in sorted(public_plugins):
-                print(f"  - {p}")
-            if private_plugins:
-                print("\nUnofficial PRIVATE plugins (require login):")
-                for p in sorted(private_plugins):
-                    print(f"  - {p}")
-        else:
-            print("\n📥 Downloading unofficial plugins...")
-            for plugin in all_plugins:
-                if download_unofficial_plugin(plugin):
-                    stats["unofficial"] += 1
-                else:
-                    stats["failed"] += 1
-
-    # Print summary
-    if not args.list:
-        print("\n" + "=" * 60)
-        print("Summary:")
-        print(f"  ✓ Official plugins: {stats['official']}")
-        print(f"  ✓ Unofficial plugins: {stats['unofficial']}")
-        if stats["failed"] > 0:
-            print(f"  ✗ Failed: {stats['failed']}")
-        print("=" * 60)
-        print("\n💡 Next step: docker compose restart qbittorrent")
-
-    return 0 if stats["failed"] == 0 else 1
+    if (args.list):
+        list_plugins(args.official, args.unofficial, args.private)
+    else:
+        dirPlugins = Path(args.dir)
+        dirPlugins.mkdir(parents=True, exist_ok=True)
+        download_plugins(dirPlugins, args.official, args.unofficial, args.private)
 
 
 if __name__ == "__main__":
