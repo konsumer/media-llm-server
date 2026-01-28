@@ -190,7 +190,7 @@ via: 1.1 google
 forwarded: <YOUR_IP>,<ANOTHER>
 ```
 
-You can also try [a magent link here](https://torguard.net/check-my-torrent-ip-address/), to verify yuour torrent client does not show your real IP.
+You can also try [a magent link from here](https://torguard.net/check-my-torrent-ip-address/), to verify your torrent client does not show your real IP. You can just add it to your torrent client (`+` button) at `http://localhost:8080`.
 
 ## Local Network Access
 
