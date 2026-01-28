@@ -5,7 +5,6 @@ Docker-based media server with VPN-protected torrents, Plex, AI tools, and more.
 > [!WARNING]
 > It is assumed this is running on your LAN, behind a firewall. Everything is lacking authentication (but you can add it) so you probably don't want to deploy this as-is, if your network is not secured.
 
-
 Some things you should setup, first:
 
 - Get a VPN. Most will work fine, look for "WireGuard" configuration, and use it to set the `WIREGAURD_` variables
@@ -15,7 +14,7 @@ Some things you should setup, first:
 In the directions below:
 
 - `/mnt/MEDIA/server/config` - defined as `$CONFIG` in `.env`. This is where dockers will store their settings.
-- `/mnt/MEDIA` - defined as `$ROOT` in `.env`. This is where all your media-files go. 
+- `/mnt/MEDIA` - defined as `$ROOT` in `.env`. This is where all your media-files go.
 
 You can set the variables to whatever location you want.
 
@@ -32,30 +31,28 @@ Actually look at `.env`, since they have some config to fill in.
 
 In order for some of the containers to work as they are (ollama/plex) you should install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) and have an NVIDIA GPU. This part is optional, just remove this kind of stuff from docker-compose:
 
-
 ```yml
 deploy:
-   resources:
-     reservations:
-       devices:
-         - count: 1
-           driver: nvidia
-           capabilities: [gpu]
-````
+  resources:
+    reservations:
+      devices:
+        - count: 1
+          driver: nvidia
+          capabilities: [gpu]
+```
 
 ## Services
 
-- **qBittorrent + VueTorrent**: Modern torrent client with VPN protection
-- **Gluetun**: VPN container (WireGuard) - automatically wraps any service you connect to it, so your IP is not exposed.
-- **Plex**: Media server
-- **Ollama + LLMs**: Self-hosted AI
-- **Samba**: Network file sharing
-- **Nginx**: Web server (for frontend)
+- **[qBittorrent](https://www.qbittorrent.org/) + [VueTorrent](https://github.com/VueTorrent/VueTorrent)**: Modern torrent client with VPN protection
+- **[Gluetun](https://github.com/qdm12/gluetun)**: VPN container (WireGuard) - automatically wraps any service you connect to it, so your IP is not exposed.
+- **[Plex](https://plex.tv)**: Media server
+- **[Ollama](https://ollama.com/) + [LLMs](https://llmspy.org/)**: Self-hosted AI
+- **[Samba](https://www.samba.org/)**: Network file sharing
+- **[Nginx](https://nginx.org/)**: Web server (for frontend)
 
 ## Running things
 
 It's all using docker-compose, so it's easy to manage:
-
 
 ```sh
 # run it all
@@ -71,10 +68,10 @@ docker compose ps
 docker compose restart
 
 # restart 1 thing
-docker compsoe restart qbittorrent
+docker compose restart qbittorrent
 
 # run a shell in 1 thing, to look around
-docker compsoe exec qbittorrent sh
+docker compose exec qbittorrent sh
 
 # stop it
 docker compose down
@@ -91,11 +88,11 @@ You can either ignore these, or remove them from `docker-compose.yml`. Adding al
 ## Accessing Services
 
 ### Direct Access (via ports)
+
 - **qBittorrent (VueTorrent)**: http://localhost:8080
 - **Plex**: http://localhost:32400/web
 - **Ollama**: http://localhost:11434
 - **LLMs Frontend**: http://localhost:8000
-
 
 ### Adding More qBittorrent Search Plugins
 
@@ -121,6 +118,7 @@ python3 install-search-plugins.py --list
 ```
 
 Then restart qBittorrent:
+
 ```bash
 docker compose restart qbittorrent
 ```
@@ -134,11 +132,13 @@ The new plugins will appear in VueTorrent's search dropdown.
    - Unofficial: https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins
 
 2. **Download the .py file** to:
+
    ```bash
    config/qbittorrent/qBittorrent/nova3/engines/
    ```
 
 3. **Example:**
+
    ```bash
    wget https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/PLUGINNAME.py \
      -O config/qbittorrent/qBittorrent/nova3/engines/PLUGINNAME.py
@@ -150,6 +150,7 @@ The new plugins will appear in VueTorrent's search dropdown.
    ```
 
 #### Popular Plugins
+
 - **eztv.py** - TV shows
 - **solidtorrents.py** - Meta-search across multiple sites
 - **jackett.py** - Integrates with Jackett (requires configuration, and you might want to run jackett in your docker-compose)
@@ -160,7 +161,9 @@ The new plugins will appear in VueTorrent's search dropdown.
 All torrent traffic routes through Gluetun VPN.
 
 ### VPN Settings
+
 Located in `.env` file:
+
 ```
 VPN_ENDPOINT_IP=<YOURS>
 VPN_ENDPOINT_PORT=<YOURS>
@@ -169,6 +172,7 @@ WIREGUARD_PRIVATE_KEY=<YOURS>
 ```
 
 ### Verify VPN is Working
+
 ```bash
 docker compose exec qbittorrent curl ifconfig.me/all
 
@@ -197,6 +201,7 @@ You can also try [a magent link from here](https://torguard.net/check-my-torrent
 You might need to adjust the concept of "local" IP. On my network, that is `192.168.86.X`. The ` 172.X` addresses here are for docker.
 
 qBittorrent WebUI is accessible without password from:
+
 - 192.168.86.0/24
 - 172.17.0.0/24
 - 172.18.0.0/24
@@ -216,7 +221,6 @@ qBittorrent WebUI is accessible without password from:
 ## Setup
 
 There is a bit of setup to do after this. Go to each link on [your local page](http://localhost) to configure each thing. Specifically, you will want to login/claim/configure plex, and probably also want to setup some basic stuff on your torrent client.
-
 
 ## Troubleshooting
 

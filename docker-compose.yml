@@ -107,6 +107,10 @@ services:
   llms:
     ports:
       - 8000:8000
+    extra_hosts:
+      - "plex:host-gateway"
+      - "qbittorrent:host-gateway"
+      - "ollama:host-gateway"
     environment:
       - UID=${PUID} # default user id, defined in .env
       - GID=${PGID} # default group id, defined in .env
@@ -114,9 +118,9 @@ services:
       - VERBOSE=1
       - PWD=/code
       - LLMS_BASE_DIR=/code # this gives AI file-access!
-      
+
       # API Keys - Set these in your .env file or pass them directly
-      
+
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}
       - CHUTES_API_KEY=${CHUTES_API_KEY}
@@ -136,11 +140,11 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - XAI_API_KEY=${XAI_API_KEY}
       - ZHIPU_API_KEY=${ZHIPU_API_KEY}
-    
+
     volumes:
       - ${CONFIG}/llms:/home/llms/.llms
       - ${ROOT}/dev:/code # allow it to get into code!
-    
+
     # image: ghcr.io/servicestack/llms:latest
     build:
       context: ./docker
