@@ -20,6 +20,7 @@ PLUGINS_DIR_DEFAULT = "./config/qbittorrent/qBittorrent/nova3/engines"
 # these are pulled from
 # https://github.com/qbittorrent/search-plugins/tree/master/nova3/engines
 # https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins
+# there were some dead, so I tried to find them
 
 plugins = {
   "official": {
@@ -98,7 +99,7 @@ plugins = {
   "private": {
     "bakabt": "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/bakabt.py",
     "danishbytes": "https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/danishbytes.py",
-    # "filelist": "https://raw.githubusercontent.com/victorBuzdugan/QbittorrentFilelistSearchPlugin/master/filelist.py",
+    "filelist": "https://raw.githubusercontent.com/PricopeStefan/Filelist-QBitTorrent-Plugin/refs/heads/main/filelist.py",
     "gazellegames": "https://raw.githubusercontent.com/Ooggle/qbittorrent-search-plugins/master/engines/gazellegames.py",
     "iptorrents": "https://raw.githubusercontent.com/txtsd/qB-IPT/master/iptorrents.py",
     "kinozal": "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/kinozal.py",
