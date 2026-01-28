@@ -1,0 +1,158 @@
+services:
+  samba:
+    image: dockurr/samba
+    restart: unless-stopped
+    environment:
+      - USER=timemachine
+      - PASS=timemachine
+      - UID=1000
+      - GID=1000
+    ports:
+      - "445:445"
+    volumes:
+      - ${ROOT}:/media
+      - ${CONFIG}/samba/smb.conf:/etc/samba/smb.conf
+    networks:
+      default: null
+
+  # little web-page for everything
+  # totally optional, but it helps me remember where things are
+  web:
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./webroot:/var/www/html
+      - ${CONFIG}/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # self-hosted AI
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ${CONFIG}/ollama:/root/.ollama
+    ports:
+      - 11434:11434
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - count: 1
+              driver: nvidia
+              capabilities: [gpu]
+
+  # VPN container - all torrent traffic goes through this
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8080:8080 # qBittorrent WebUI
+      - 6881:6881 # qBittorrent peer port
+      - 6881:6881/udp
+    volumes:
+      - ${CONFIG}/gluetun:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
+      - VPN_ENDPOINT_PORT=${VPN_ENDPOINT_PORT}
+      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=10.34.189.5/16 # local addresses that are allowed to use the VPN
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.86.0/24,172.17.0.0/24 # local outbound addresses
+      - DNS_ADDRESS=10.35.53.1
+      - TZ=${TZ}
+
+  # qBittorrent with VueTorrent UI (runs through VPN)
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    restart: unless-stopped
+    network_mode: "service:gluetun" # Routes all traffic through VPN
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${CONFIG}/qbittorrent:/config
+      - ${ROOT}/downloads/torrents:/downloads
+      - ${ROOT}:/media
+    depends_on:
+      - gluetun
+
+  # frontend for LLMs (including ollama)
+  llms:
+    ports:
+      - 8000:8000
+    environment:
+      - UID=${PUID} # default user id, defined in .env
+      - GID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+      - VERBOSE=1
+      - PWD=/code
+      - LLMS_BASE_DIR=/code # this gives AI file-access!
+      
+      # API Keys - Set these in your .env file or pass them directly
+      
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}
+      - CHUTES_API_KEY=${CHUTES_API_KEY}
+      - CODESTRAL_API_KEY=${CODESTRAL_API_KEY}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - HF_TOKEN=${HF_TOKEN}
+      - MINIMAX_API_KEY=${MINIMAX_API_KEY}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - MOONSHOT_API_KEY=${MOONSHOT_API_KEY}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - XAI_API_KEY=${XAI_API_KEY}
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+    
+    volumes:
+      - ${CONFIG}/llms:/home/llms/.llms
+      - ${ROOT}/dev:/code # allow it to get into code!
+    
+    # image: ghcr.io/servicestack/llms:latest
+    build:
+      context: ./docker
+      dockerfile: ./llms.Dockerfile
+
+  # this manages media
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - TZ=${TZ} # timezone, defined in .env
+      - PLEX_CLAIM=${PLEX_CLAIM} # your user-code, in .env
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - VERSION=latest
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+    volumes:
+      - ${CONFIG}/plex/db:/config # plex database
+      - ${ROOT}/transcode:/transcode # temp transcoded files
+      - ${ROOT}:/media # media library
+      - /dev:/dev
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - count: 1
+              driver: nvidia
+              capabilities: [gpu]
