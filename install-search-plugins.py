@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Download qBittorrent search plugins from official and unofficial sources.
-Usage: python3 install-search-plugins.py [--official] [--unofficial] [--all]
+Usage: python3 install-search-plugins.py [--official] [--unofficial] [--private]
 """
 
 import argparse
@@ -20,7 +20,7 @@ PLUGINS_DIR_DEFAULT = "./config/qbittorrent/qBittorrent/nova3/engines"
 # these are pulled from
 # https://github.com/qbittorrent/search-plugins/tree/master/nova3/engines
 # https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins
-# there were some dead, so I tried to find them
+# there were some dead
 
 plugins = {
   "official": {
@@ -83,7 +83,7 @@ plugins = {
     "thepiratebay": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/thepiratebay.py",
     "therarbg": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/therarbg.py",
     "tomadivx": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/tomadivx.py",
-    "tokyotoshokan": "https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py",
+    # "tokyotoshokan": "https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py",
     "torrent9": "https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py",
     "torrentdownload": "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/torrentdownload.py",
     "torrentdownloads": "https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/refs/heads/main/torrentdownloads.py",
@@ -119,12 +119,12 @@ plugins = {
 }
 
 def list_plugins(official, unofficial, private):
-    for header in plugins:
+    for category in plugins:
         print(header) 
-        if not len(plugins[header]):
+        if not len(plugins[category]):
             print("  NONE")
         else:
-            for plugin in plugins[header]:
+            for plugin in plugins[category]:
                 print(f"  {plugin}")
         print("")
 
@@ -161,11 +161,6 @@ def main():
         help="Download/list private tracker unooficial plugins (requires login/account)",
     )
     parser.add_argument(
-        "--all",
-        action="store_true",
-        help="Download/list both official and unofficial plugins",
-    )
-    parser.add_argument(
         "--list",
         action="store_true",
         help="List available plugins without downloading",
@@ -178,12 +173,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Default to --all if no flags specified (or if only --list is specified)
-    if not (args.official or args.unofficial or args.all):
-        args.all = True
-
-    # set all to true for all
-    if args.all:
+    # Default to all non-private if no flags specified (or if only --list is specified)
+    if not (args.official or args.unofficial):
         args.official = True
         args.unofficial = True
 
