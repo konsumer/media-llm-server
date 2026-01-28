@@ -119,12 +119,12 @@ plugins = {
 }
 
 def list_plugins(official, unofficial, private):
-    for header in plugins:
+    for category in plugins:
         print(header) 
-        if not len(plugins[header]):
+        if not len(plugins[category]):
             print("  NONE")
         else:
-            for plugin in plugins[header]:
+            for plugin in plugins[category]:
                 print(f"  {plugin}")
         print("")
 
