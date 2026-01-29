@@ -2,6 +2,11 @@
 
 Docker-based media server with VPN-protected torrents, Plex, AI tools, and more.
 
+It is intended to be a central media-server setup that supports my [AI media MCPs](https://github.com/konsumer/aitorrent)
+
+<img width="1654" height="793" alt="image" src="https://github.com/user-attachments/assets/f0321e61-b712-4195-ab77-46687892e7dc" />
+
+
 > [!WARNING]
 > It is assumed this is running on your LAN, behind a firewall. Everything is lacking authentication (but you can add it) so you probably don't want to deploy this as-is, if your network is not secured.
 
