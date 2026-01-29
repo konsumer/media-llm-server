@@ -5,7 +5,7 @@ Docker-based media server with VPN-protected torrents, Plex, AI tools, and more.
 > [!WARNING]
 > It is assumed this is running on your LAN, behind a firewall. Everything is lacking authentication (but you can add it) so you probably don't want to deploy this as-is, if your network is not secured.
 
-It is intended to be a central media-server setup that supports my [AI media MCPs](https://github.com/konsumer/aitorrent):
+It is intended to be a central media-server setup that supports my [AI media MCPs](https://github.com/konsumer/aitorrent), but you can use it without that, or just use the media-stuff, if you don't want to use it with AI.
 
 ---
 🎉 I've successfully added all 3 episodes of **Star Trek: Starfleet Academy** to your download queue!
