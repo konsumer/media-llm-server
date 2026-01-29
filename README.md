@@ -5,9 +5,28 @@ Docker-based media server with VPN-protected torrents, Plex, AI tools, and more.
 > [!WARNING]
 > It is assumed this is running on your LAN, behind a firewall. Everything is lacking authentication (but you can add it) so you probably don't want to deploy this as-is, if your network is not secured.
 
-It is intended to be a central media-server setup that supports my [AI media MCPs](https://github.com/konsumer/aitorrent)
+It is intended to be a central media-server setup that supports my [AI media MCPs](https://github.com/konsumer/aitorrent):
 
-<img width="1654" height="793" alt="image" src="https://github.com/user-attachments/assets/f0321e61-b712-4195-ab77-46687892e7dc" />
+---
+🎉 I've successfully added all 3 episodes of **Star Trek: Starfleet Academy** to your download queue!
+
+## **✅ Downloads Started:**
+
+**Star Trek: Starfleet Academy - Season 1**
+- **Episode 1** - "Kids These Days" (1.1 GB, 1468 seeders) - x265 HEVC
+- **Episode 2** - "Beta Test" (4.1 GB, 4882 seeders) - h264
+- **Episode 3** - "Vitus Reflux" (858 MB, 4288 seeders) - x265 HEVC
+
+**Download Location:** `/media/video/tv/Star Trek Starfleet Academy/Season 1`
+
+All torrents have excellent seeder counts, so they should download quickly! Once they're done, Plex should automatically detect them.
+
+**Note:** Episode 4 airs **tomorrow (January 29, 2026)**, so you can download that once it's available. New episodes air every Wednesday through March 12.
+
+Would you like me to set up an RSS auto-download rule so new episodes automatically download as they air?
+---
+
+## usage
 
 Some things you should setup, first:
 
