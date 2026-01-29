@@ -24,6 +24,7 @@ All torrents have excellent seeder counts, so they should download quickly! Once
 **Note:** Episode 4 airs **tomorrow (January 29, 2026)**, so you can download that once it's available. New episodes air every Wednesday through March 12.
 
 Would you like me to set up an RSS auto-download rule so new episodes automatically download as they air?
+
 ---
 
 ## usage
